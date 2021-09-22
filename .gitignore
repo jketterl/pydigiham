@@ -1,0 +1,5 @@
+build
+.idea
+digiham.egg-info
+dist
+__pycache__
