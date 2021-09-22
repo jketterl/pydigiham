@@ -9,6 +9,6 @@ Vcs-Git: https://github.com/jketterl/pydigiham.git
 
 Package: python3-digiham
 Architecture: any
-Depends: libdigiham0 (>= 0.6), python3-csdr (>= 0.18), ${shlibs:Depends}, ${misc:Depends}
+Depends: libdigiham0 (>= 0.6), python3-csdr (>= 0.18), ${python3:Depends}, ${shlibs:Depends}, ${misc:Depends}
 Description: Python bindings for the digiham library
  Offers a python interface to the various decoders included in digiham
