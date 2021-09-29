@@ -91,6 +91,31 @@ static Digiham::Mbe::Mode* convertToAmbeMode(PyObject* mode) {
     return nullptr;
 }
 
+static Digiham::Mbe::MbeSynthesizer* createModule(std::string serverString) {
+    if (!serverString.length()) {
+        // no arguments given, use default behavior
+        return new Digiham::Mbe::MbeSynthesizer();
+    }
+    if (serverString.at(0) == '/') {
+        // is a unix domain socket path
+        return new Digiham::Mbe::MbeSynthesizer(serverString);
+    }
+
+    // is an IPv4 / IPv6 address or hostname as string
+
+    // default port
+    unsigned short port = 1073;
+
+    // split by port number, if given
+    size_t pos = serverString.find(":");
+    if (pos != std::string::npos) {
+        port = std::stoul(serverString.substr(pos + 1));
+        serverString = serverString.substr(0, pos);
+    }
+
+    return new Digiham::Mbe::MbeSynthesizer(serverString, port);
+}
+
 static int MbeSynthesizer_init(MbeSynthesizer* self, PyObject* args, PyObject* kwds) {
     self->inputFormat = FORMAT_CHAR;
     self->outputFormat = FORMAT_SHORT;
@@ -114,44 +139,77 @@ static int MbeSynthesizer_init(MbeSynthesizer* self, PyObject* args, PyObject* k
 
     std::string serverString(server);
 
+    // creating an mbesysnthesizer module potentially waits for network traffic, so we allow other threads in the meantime
+    Digiham::Mbe::MbeSynthesizer* module;
+    std::string error;
+    Py_BEGIN_ALLOW_THREADS
     try {
-        if (!serverString.length()) {
-            // no arguments given, use default behavior
-            self->setModule(new Digiham::Mbe::MbeSynthesizer(ambeMode));
-        } else if (serverString.at(0) == '/') {
-            // is a unix domain socket path
-            self->setModule(new Digiham::Mbe::MbeSynthesizer(serverString, ambeMode));
-        } else {
-            // is an IPv4 / IPv6 address or hostname as string
-
-            // default port
-            unsigned short port = 1073;
-
-            // split by port number, if given
-            size_t pos = serverString.find(":");
-            if (pos != std::string::npos) {
-                port = std::stoul(serverString.substr(pos + 1));
-                serverString = serverString.substr(0, pos);
-            }
-
-            // creating an mbesysnthesizer module potentially waits for network traffic, so we allow other threads in the meantime
-
-            Csdr::UntypedModule* module;
-            Py_BEGIN_ALLOW_THREADS
-            module = new Digiham::Mbe::MbeSynthesizer(serverString, port, ambeMode);
-            Py_END_ALLOW_THREADS
-            self->setModule(module);
-        }
+        module = createModule(serverString);
+        module->setMode(ambeMode);
     } catch (const Digiham::Mbe::ConnectionError& e) {
-        PyErr_SetString(PyExc_ConnectionError, e.what());
+        error = e.what();
+    }
+    Py_END_ALLOW_THREADS
+
+    if (error != "") {
+        PyErr_SetString(PyExc_ConnectionError, error.c_str());
         return -1;
     }
+
+    if (module == nullptr) {
+        PyErr_SetString(PyExc_RuntimeError, "unable to create MbeSynthesizer module");
+        return -1;
+    }
+
+    self->setModule(module);
 
     return 0;
 }
 
+static PyObject* MbeSynthesizer_hasAmbe(MbeSynthesizer* self, PyObject* args, PyObject* kwds) {
+    static char* kwlist[] = {(char*) "server", NULL};
+
+    char* server = (char*) "";
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|s", kwlist, &server)) {
+        return NULL;
+    }
+
+    std::string serverString(server);
+
+    // creating an mbesysnthesizer module potentially waits for network traffic, so we allow other threads in the meantime
+    bool result = false;
+    std::string error;
+    Py_BEGIN_ALLOW_THREADS
+    try {
+        Digiham::Mbe::MbeSynthesizer* module = createModule(serverString);
+        result = module->hasAmbeCodec();
+    } catch (const Digiham::Mbe::ConnectionError& e) {
+        error = e.what();
+    }
+    Py_END_ALLOW_THREADS
+
+    if (error != "") {
+        PyErr_SetString(PyExc_ConnectionError, error.c_str());
+        return NULL;
+    }
+
+    if (result) {
+        Py_RETURN_TRUE;
+    } else {
+        Py_RETURN_FALSE;
+    }
+}
+
+static PyMethodDef MbeSynthesizer_methods[] = {
+    {"hasAmbe", (PyCFunction) MbeSynthesizer_hasAmbe, METH_VARARGS | METH_KEYWORDS | METH_STATIC,
+     "check if the codecserver instance supports the ambe codec"
+    },
+    {NULL}  /* Sentinel */
+};
+
 static PyType_Slot MbeSynthesizerSlots[] = {
     {Py_tp_init, (void*) MbeSynthesizer_init},
+    {Py_tp_methods, MbeSynthesizer_methods},
     {0, 0}
 };
 

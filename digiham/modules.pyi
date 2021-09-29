@@ -30,6 +30,10 @@ class NarrowRrcFilter(Module):
 
 
 class MbeSynthesizer(Module):
+    @staticmethod
+    def hasAmbe(server: str = "") -> bool:
+        ...
+
     def __init__(self, mode: Mode, server: str = ""):
         ...
 
