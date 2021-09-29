@@ -140,7 +140,7 @@ static int MbeSynthesizer_init(MbeSynthesizer* self, PyObject* args, PyObject* k
     std::string serverString(server);
 
     // creating an mbesysnthesizer module potentially waits for network traffic, so we allow other threads in the meantime
-    Digiham::Mbe::MbeSynthesizer* module;
+    Digiham::Mbe::MbeSynthesizer* module = nullptr;
     std::string error;
     Py_BEGIN_ALLOW_THREADS
     try {
