@@ -8,6 +8,8 @@ It is primarily used for demodulation of digital radio signals in the OpenWebRX 
 
 Please install `digiham` and its dependencies before compiling this project.
 
+Please also install the python development files (`libpython3-dev` on most Debian-based distributions).
+
 ```
 sudo ./setup.py install
 ```
