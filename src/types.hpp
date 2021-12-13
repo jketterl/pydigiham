@@ -26,3 +26,4 @@ PyTypeObject* getAmbeModeType();
 PyTypeObject* getAmbeTableModeType();
 PyTypeObject* getAmbeControlWordModeType();
 PyTypeObject* getAmbeDynamicModeType();
+PyTypeObject* getServerErrorType();

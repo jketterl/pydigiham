@@ -148,3 +148,17 @@ PyTypeObject* getAmbeDynamicModeType() {
 
     return (PyTypeObject*) ModeType;
 }
+
+PyTypeObject* getServerErrorType() {
+    PyObject* module = getDigihamAmbeModule();
+
+    PyObject* ServerErrorType = PyObject_GetAttrString(module, "ServerError");
+    if (ServerErrorType == NULL) {
+        PyErr_Print();
+        exit(1);
+    }
+
+    Py_DECREF(module);
+
+    return (PyTypeObject*) ServerErrorType;
+}

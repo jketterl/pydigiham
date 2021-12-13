@@ -141,18 +141,24 @@ static int MbeSynthesizer_init(MbeSynthesizer* self, PyObject* args, PyObject* k
 
     // creating an mbesysnthesizer module potentially waits for network traffic, so we allow other threads in the meantime
     Digiham::Mbe::MbeSynthesizer* module = nullptr;
+    PyObject* PyExc_ServerError = (PyObject*) getServerErrorType();
+    PyObject* error_type = nullptr;
     std::string error;
     Py_BEGIN_ALLOW_THREADS
     try {
         module = createModule(serverString);
         module->setMode(ambeMode);
-    } catch (const Digiham::Mbe::ConnectionError& e) {
+    } catch (const Digiham::Mbe::ServerError& e) {
+        error_type = PyExc_ServerError;
+        error = e.what();
+    } catch (const Digiham::Mbe::Error& e) {
+        error_type = PyExc_ConnectionError;
         error = e.what();
     }
     Py_END_ALLOW_THREADS
 
-    if (error != "") {
-        PyErr_SetString(PyExc_ConnectionError, error.c_str());
+    if (error_type != nullptr) {
+        PyErr_SetString(error_type, error.c_str());
         return -1;
     }
 

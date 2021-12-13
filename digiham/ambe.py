@@ -45,3 +45,7 @@ class Modes:
     DStarMode = ControlWordMode(b'\x01\x30\x07\x63\x40\x00\x00\x00\x00\x00\x00\x48')
     NxdnMode = TableMode(33)
     YsfMode = YsfMode()
+
+
+class ServerError(Exception):
+    pass
