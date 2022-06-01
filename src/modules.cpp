@@ -125,7 +125,11 @@ PyInit_modules(void) {
 
     PyModule_AddObject(m, "PocsagDecoder", PocsagDecoderType);
 
-    PyObject* version = PyUnicode_FromStringAndSize(Digiham::version.c_str(), Digiham::version.length());
+    PyObject* digihamVersion = PyUnicode_FromStringAndSize(Digiham::version.c_str(), Digiham::version.length());
+    if (digihamVersion == NULL) return NULL;
+    PyModule_AddObject(m, "digiham_version", digihamVersion);
+
+    PyObject* version = PyUnicode_FromString(VERSION);
     if (version == NULL) return NULL;
     PyModule_AddObject(m, "version", version);
 

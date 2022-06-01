@@ -6,6 +6,8 @@ from sys import version_info
 from os import path
 
 
+version = "0.6.0-dev"
+
 # some distributions seem to have messed with the install locations of header files, so we need to improvise here...
 additional_includes = [
     x for x in [
@@ -17,7 +19,7 @@ additional_includes = [
 
 setup(
     name="digiham",
-    version="0.6.0-dev",
+    version=version,
     packages=["digiham"],
 
     package_data={
@@ -51,6 +53,7 @@ setup(
             language="c++",
             include_dirs=["src"] + additional_includes,
             libraries=["csdr++", "digiham"],
+            define_macros=[("VERSION", '"{}"'.format(version))],
         )
     ],
 

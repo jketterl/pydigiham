@@ -2,6 +2,7 @@ from pycsdr.modules import Module, Writer
 from digiham.ambe import Mode
 
 version: str = ...
+digiham_version: str = ...
 
 
 class DcBlock(Module):
