@@ -6,7 +6,7 @@ from sys import version_info
 from os import path
 
 
-version = "0.6.0"
+version = "0.7.0-dev"
 
 # some distributions seem to have messed with the install locations of header files, so we need to improvise here...
 additional_includes = [
