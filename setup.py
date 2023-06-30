@@ -36,7 +36,6 @@ setup(
                 "src/modules.cpp",
                 "src/types.cpp",
                 "src/decoder.cpp",
-                "src/dcblock.cpp",
                 "src/dstardecoder.cpp",
                 "src/fskdemodulator.cpp",
                 "src/digitalvoicefilter.cpp",

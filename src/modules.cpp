@@ -2,7 +2,6 @@
 
 #include "modules.hpp"
 #include "decoder.hpp"
-#include "dcblock.hpp"
 #include "dstardecoder.hpp"
 #include "fskdemodulator.hpp"
 #include "gfskdemodulator.hpp"
@@ -30,11 +29,6 @@ PyInit_modules(void) {
     if (bases == NULL) return NULL;
     PyObject* DecoderType = PyType_FromSpecWithBases(&DecoderSpec, bases);
     if (DecoderType == NULL) return NULL;
-
-    bases = PyTuple_Pack(1, getModuleType());
-    if (bases == NULL) return NULL;
-    PyObject* DcBlockType = PyType_FromSpecWithBases(&DcBlockSpec, bases);
-    if (DcBlockType == NULL) return NULL;
 
     Py_INCREF(DecoderType);
     bases = PyTuple_Pack(1, DecoderType);
@@ -100,8 +94,6 @@ PyInit_modules(void) {
     if (m == NULL) {
         return NULL;
     }
-
-    PyModule_AddObject(m, "DcBlock", DcBlockType);
 
     PyModule_AddObject(m, "DstarDecoder", DstarDecoderType);
 
