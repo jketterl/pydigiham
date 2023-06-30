@@ -51,7 +51,7 @@ setup(
             ],
             language="c++",
             include_dirs=["src"] + additional_includes,
-            libraries=["csdr++", "digiham"],
+            libraries=["digiham"],
             define_macros=[("VERSION", '"{}"'.format(version))],
         )
     ],
