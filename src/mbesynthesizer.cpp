@@ -151,8 +151,11 @@ static int MbeSynthesizer_init(MbeSynthesizer* self, PyObject* args, PyObject* k
     } catch (const Digiham::Mbe::ServerError& e) {
         error_type = PyExc_ServerError;
         error = e.what();
-    } catch (const Digiham::Mbe::Error& e) {
+    } catch (const Digiham::Mbe::ConnectionError& e) {
         error_type = PyExc_ConnectionError;
+        error = e.what();
+    } catch (const Digiham::Mbe::Error& e) {
+        error_type = PyExc_RuntimeError;
         error = e.what();
     }
     Py_END_ALLOW_THREADS
@@ -185,17 +188,22 @@ static PyObject* MbeSynthesizer_hasAmbe(MbeSynthesizer* self, PyObject* args, Py
     // creating an mbesysnthesizer module potentially waits for network traffic, so we allow other threads in the meantime
     bool result = false;
     std::string error;
+    PyObject* error_type = nullptr;
     Py_BEGIN_ALLOW_THREADS
     try {
         Digiham::Mbe::MbeSynthesizer* module = createModule(serverString);
         result = module->hasAmbeCodec();
     } catch (const Digiham::Mbe::ConnectionError& e) {
+        error_type = PyExc_ConnectionError;
+        error = e.what();
+    } catch (const Digiham::Mbe::Error& e) {
+        error_type = PyExc_RuntimeError;
         error = e.what();
     }
     Py_END_ALLOW_THREADS
 
-    if (error != "") {
-        PyErr_SetString(PyExc_ConnectionError, error.c_str());
+    if (error_type != nullptr) {
+        PyErr_SetString(error_type, error.c_str());
         return NULL;
     }
 
