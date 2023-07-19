@@ -6,6 +6,12 @@ It is primarily used for demodulation of digital radio signals in the OpenWebRX 
 
 # Installation
 
+# Installation
+
+The OpenWebRX project is hosting pydigiham packages in their repositories. Please click the respective link for [Debian](https://www.openwebrx.de/download/debian.php) or [Ubuntu](https://www.openwebrx.de/download/ubuntu.php). Due to naming conventions, the repository package is called `python3-digiham`.
+
+# Compiling from source
+
 Please install `digiham` and its dependencies before compiling this project.
 
 Please also install the python development files (`libpython3-dev` on most Debian-based distributions).
