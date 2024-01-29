@@ -190,8 +190,9 @@ static PyObject* MbeSynthesizer_hasAmbe(MbeSynthesizer* self, PyObject* args, Py
     std::string error;
     PyObject* error_type = nullptr;
     Py_BEGIN_ALLOW_THREADS
+    Digiham::Mbe::MbeSynthesizer* module = nullptr;
     try {
-        Digiham::Mbe::MbeSynthesizer* module = createModule(serverString);
+        module = createModule(serverString);
         result = module->hasAmbeCodec();
     } catch (const Digiham::Mbe::ConnectionError& e) {
         error_type = PyExc_ConnectionError;
@@ -200,6 +201,7 @@ static PyObject* MbeSynthesizer_hasAmbe(MbeSynthesizer* self, PyObject* args, Py
         error_type = PyExc_RuntimeError;
         error = e.what();
     }
+    delete module;
     Py_END_ALLOW_THREADS
 
     if (error_type != nullptr) {
